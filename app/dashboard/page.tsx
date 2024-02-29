@@ -1,6 +1,17 @@
-export default async function Page() {
-  const {message} = await getData()
-  return <h1>{message}</h1>
+'use client'
+
+import React from "react";
+
+export default function Page() {
+  const [error, setError] = React.useState(false)
+  const handleGetError = () => {
+    setError(true)
+  }
+  return (
+    <>
+      {error ? Error() : <button onClick={handleGetError}>Get error</button>}
+    </>
+  )
 }
 
 async function getData() {
