@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import React from "react";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,12 +13,30 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  team,
+  analytics
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode,
+  team: React.ReactNode,
+  analytics: React.ReactNode
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className="p-6">
+        <div className="p-10 mb-6 bg-sky-600 text-white rounded-xl">
+          Parallel Route Example
+        </div>
+        <nav className="flex items-center justify-center gap-10 text-blue-600 mb-6">
+          <Link href={"/"}>Home</Link>
+          <Link href={"/page-views"}>Page-views</Link>
+          <Link href={"/visitors"}>Visitors</Link>
+        </nav>
+        <div className="flex gap-6">
+          {team}
+          {analytics}
+        </div>
+        {children}
+      </body>
     </html>
   );
 }
