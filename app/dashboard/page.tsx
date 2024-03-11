@@ -1,16 +1,37 @@
 'use client'
 
-import React from "react";
+import React, {Suspense} from "react";
 
-export default function Page() {
-  const [error, setError] = React.useState(false)
-  const handleGetError = () => {
-    setError(true)
-  }
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
+
+async function PostFeed() {
+  await sleep(2000)
+  return <div>hello post feed</div>
+}
+
+async function Weather() {
+  await sleep(8000)
+  return <div>hello weather</div>
+}
+
+async function Recommend() {
+  await sleep(5000)
+  return <div>hello recommend</div>
+}
+
+export default function Dashboard() {
   return (
-    <>
-      {error ? Error() : <button onClick={handleGetError}>Get error</button>}
-    </>
+    <section className="p-20">
+      <Suspense fallback={<p>loading post feed...</p>}>
+        <PostFeed/>
+      </Suspense>
+      <Suspense fallback={<p>loading weather...</p>}>
+        <Weather/>
+      </Suspense>
+      <Suspense fallback={<p>loading recommend</p>}>
+        <Recommend/>
+      </Suspense>
+    </section>
   )
 }
 
