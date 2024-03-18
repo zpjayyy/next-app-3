@@ -20,8 +20,8 @@ function SubmitButton() {
 export async function AddTodoForm() {
   const [state, formAction] = useFormState(createTodo, initialState)
   return (
-    <form action={formAction}>
-      <input type="text" name="todo"/>
+    <form action={formAction} className="bg-sky-600">
+      <input type="text" name="todo" className="bg-black"/>
       <SubmitButton/>
       <p aria-live="polite" className="sr-only">
         {state?.message}

@@ -16,7 +16,7 @@ export async function createTodo(preState: any, formDate: FormData) {
   if (typeof todo === "string") {
     data.push(todo)
   }
-  revalidatePath('/form3')
+  revalidatePath('/form4')
   return {
     message: `add ${todo} success`
   }
