@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
 import Link from "next/link";
+import { inter } from './fonts'
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,7 +22,7 @@ export default function RootLayout({
   modal: React.ReactNode,
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <body className="p-6">
         <div className="p-10 mb-6 bg-sky-600 text-white rounded-xl">
           Parallel Route Example

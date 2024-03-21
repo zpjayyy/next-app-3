@@ -1,5 +1,6 @@
 import {photos} from "./data";
 import Link from "next/link";
+import Image from "next/image";
 
 async function handleFormAction(formData: FormData) {
   'use server'
@@ -7,6 +8,7 @@ async function handleFormAction(formData: FormData) {
 }
 
 export default function Home() {
+  console.log(process.env.DB_HOST)
   return (
     <>
       <div className="flex flex-row flex-wrap">
@@ -21,6 +23,12 @@ export default function Home() {
           <input type="text" name="name"/>
           <button type="submit">submit</button>
         </form>
+      </div>
+      <div>
+        <Image src="https://s3.amazonaws.com/my-bucket/profile.png"
+               alt="picture"
+               width="500"
+               height="500"/>
       </div>
     </>
   );
