@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
 import Link from "next/link";
-import { inter } from './fonts'
-
+import { inter } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,10 +15,10 @@ export default function RootLayout({
   analytics,
   modal,
 }: Readonly<{
-  children: React.ReactNode,
-  team: React.ReactNode,
-  analytics: React.ReactNode,
-  modal: React.ReactNode,
+  children: React.ReactNode;
+  team: React.ReactNode;
+  analytics: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <html lang="en" className={inter.className}>
