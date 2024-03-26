@@ -1,5 +1,5 @@
-import {NextRequest, NextResponse} from "next/server";
-import {RateLimiter} from "limiter";
+import { NextRequest, NextResponse } from "next/server";
+import { RateLimiter } from "limiter";
 
 // export function middleware(request: NextRequest) {
 //   // if (request.nextUrl.pathname.startsWith('/about')) {
@@ -31,12 +31,12 @@ import {RateLimiter} from "limiter";
 //   return response
 // }
 
-const allowedOrigins = ['https://acme.com', 'https://my-app.org']
+const allowedOrigins = ["https://acme.com", "https://my-app.org"];
 
 const corsOptions = {
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'ContentType, Authorization'
-}
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "ContentType, Authorization",
+};
 
 // export function middleware(request: NextRequest) {
 //   const origin = request.headers.get('origin') ?? ''
@@ -78,33 +78,75 @@ const corsOptions = {
 
 function withMiddlewareAuth(middleware: Function) {
   return async (request: NextRequest) => {
-    console.log(`aut = ${request.url}`)
-    return middleware(request)
-  }
+    console.log(`aut = ${request.url}`);
+    return middleware(request);
+  };
 }
 
 function withMiddlewareLog(middleware: Function) {
   return async (request: NextRequest) => {
-    console.log(`log = ${request.url}`)
-    return middleware(request)
-  }
+    console.log(`log = ${request.url}`);
+    return middleware(request);
+  };
+}
+
+function withMiddlewareRandom(middleware: Function) {
+  return async (request: NextRequest) => {
+    console.log(`log = ${request.url}`);
+    const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+    const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
+    style-src 'self' 'nonce-${nonce}';
+    img-src 'self' blob: data:;
+    font-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    block-all-mixed-content;
+    upgrade-insecure-requests;
+    `;
+    const contentSecurityPolicyHeaderValue = cspHeader
+      .replace(/\s{2,}/g, " ")
+      .trim();
+
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-nonce", nonce);
+    requestHeaders.set(
+      "Content-Security-Policy",
+      contentSecurityPolicyHeaderValue,
+    );
+
+    const response = NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+    response.headers.set(
+      "Content-Security-Policy",
+      contentSecurityPolicyHeaderValue,
+    );
+
+    return response;
+  };
 }
 
 async function middleware(request: NextRequest) {
-  console.log(`middleware = ${request.url}`)
-  return NextResponse.next()
+  console.log(`middleware = ${request.url}`);
+  return NextResponse.next();
 }
 
 function chain(functions: Function[], index: number = 0): Function {
-  const current = functions[index]
+  const current = functions[index];
   if (current) {
-    const next = chain(functions, index + 1)
-    return current(next)
+    const next = chain(functions, index + 1);
+    return current(next);
   }
-  return () => NextResponse.next()
+  return () => NextResponse.next();
 }
 
-export default chain([withMiddlewareLog, withMiddlewareAuth])
+export default chain([withMiddlewareLog, withMiddlewareAuth]);
 
 export const config = {
   // matcher: [
@@ -121,6 +163,19 @@ export const config = {
   //   }
   // ]
   matcher: [
-    '/api/:path*',
-  ]
-}
+    /*
+     * 匹配所有的请求路径，除了以这些开头的
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    {
+      source: "/((?!api|_next/static|_next/image|favicon.ico).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
+};
